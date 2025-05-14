@@ -59,18 +59,27 @@ export const contributeToFilm = async (req, res) => {
   try {
     const film = await Film.findById(req.params.id);
     if (!film) return res.status(404).json({ msg: 'Film not found' });
+
     const contribution = {
       user: req.body.user || 'Anonymous',
       amount: req.body.amount,
       date: new Date()
     };
+
+    // Initialize contributions array if it's undefined
+    if (!film.contributions) {
+      film.contributions = [];
+    }
+
     film.contributions.push(contribution);
     await film.save();
+
     res.json({ msg: 'Contribution successful', contribution });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Submit a contact message
 export const submitMessage = async (req, res) => {
